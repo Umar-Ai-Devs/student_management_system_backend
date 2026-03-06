@@ -32,26 +32,40 @@ def get_teachers():
 @teacher_bp.route('/teachers', methods=['POST'])
 @jwt_required()
 def add_teacher():
-    data = request.get_json()
-
     try:
-        validated_data = TeacherSchema().load(data)
-    except ValidationError as err:
-        return jsonify(err.messages), 400
+        # Handle both JSON and form data
+        if request.is_json:
+            data = request.get_json()
+        else:
+            data = request.form.to_dict()
+            # Convert age to int if it's form data
+            if 'age' in data:
+                data['age'] = int(data['age'])
 
-    teacher_data = TeacherSchema().to_teacher(validated_data)
+        print(f"Teacher data received: {data}")
 
-    teacher = Teacher(
-        name=teacher_data['name'],
-        age=teacher_data['age'],
-        email=teacher_data['email'],
-        subject=teacher_data['subject']
-    )
+        try:
+            validated_data = TeacherSchema().load(data)
+        except ValidationError as err:
+            print(f"Validation error: {err.messages}")
+            return jsonify(err.messages), 400
 
-    db.session.add(teacher)
-    db.session.commit()
+        teacher = Teacher(
+            name=validated_data['name'],
+            age=validated_data['age'],
+            email=validated_data['email'],
+            subject=validated_data['subject']
+        )
 
-    return jsonify({'message': 'Teacher added successfully'}), 201
+        db.session.add(teacher)
+        db.session.commit()
+
+        print("Teacher added successfully")
+        return jsonify({'message': 'Teacher added successfully'}), 201
+    
+    except Exception as e:
+        print(f"Exception in add_teacher: {str(e)}")
+        return jsonify({'message': f'Error: {str(e)}'}), 500
 
 
 @teacher_bp.route('/teachers/<int:teacher_id>', methods=['DELETE'])
