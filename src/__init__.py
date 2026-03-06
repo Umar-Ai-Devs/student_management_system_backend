@@ -1,18 +1,22 @@
+import os
 from flask import Flask
 from src.extentions import db, jwt, bcrypt
+from dotenv import load_dotenv
+
+load_dotenv()  # load .env file
 
 def create_app():
     app = Flask(__name__)
 
     # JWT Secret Key
-    app.config['JWT_SECRET_KEY'] = 'your-secret-key-here'
+    app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 
     # Database credentials
-    username = "avnadmin"
-    password = "AVNS_dBtunhJhTrFCFeu82pQ"
-    host = "mysql-2ef3e0dd-umaraidevs-b8b7.a.aivencloud.com"
-    port = 28018
-    database = "defaultdb"
+    username = os.environ.get('DB_USERNAME')
+    password = os.environ.get('DB_PASSWORD')
+    host = os.environ.get('DB_HOST')
+    port = int(os.environ.get('DB_PORT'))
+    database = os.environ.get('DB_NAME')
     ca_path = r"C:\Users\umara\OneDrive\Desktop\My_Projects\Student_Management_System\student_management_system\Backend\ca-certificate.pem"
 
     app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{username}:{password}@{host}:{port}/{database}"
