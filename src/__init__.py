@@ -23,7 +23,7 @@ def create_app():
 
 
     app.config['SECRET_KEY'] = 'supersecretkey'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/db_lms_1'
+    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://umaraidevs:umar9086@umaraidevs.mysql.pythonanywhere-services.com/db_lms_1"
 
 
     db.init_app(app)
